@@ -18,12 +18,12 @@ class TF2Listener(Node):
     def timer_cb(self)-> None:
         try:
             """
-                Lookup a transfrom between world and point at the specified time (0 means current time0-).
+                Lookup a transfrom between world and point at the specified time (0 means current time).
                 A timeout is specified so that the lookup will fail if a transform cannot 
                 be found within the specified time.
-                Returned type is geometry_msgs.msg.TransformStamped.
+                An object of type geometry_msgs.msg.TransformStamped is returned if successful.
             """
-            current_pose = self.tf2_buff.lookup_transform(target_frame="world", source_frame="point",
+            point_to_world_transform = self.tf2_buff.lookup_transform(target_frame="world", source_frame="point",
                                                              time=tf2_ros.Time(seconds=0),
                                                              timeout=tf2_ros.Duration(seconds=0.2))
         except Exception as ex:
@@ -36,7 +36,7 @@ class TF2Listener(Node):
                 You can also lookup the inverse transform. This result would return the a transform to take points
                 expressed in the "world" coordinates and express them in "point" coordinates
             """
-            inv_current_pose = self.tf2_buff.lookup_transform(target_frame="point", source_frame="world",
+            world_to_point_transform = self.tf2_buff.lookup_transform(target_frame="point", source_frame="world",
                                                              time=tf2_ros.Time(seconds=0),
                                                              timeout=tf2_ros.Duration(seconds=0.2))
         except Exception as ex:
@@ -44,7 +44,7 @@ class TF2Listener(Node):
             self.get_logger().warn('{}: {}'.format(type(ex).__name__, ex))
             return
 
-        self.get_logger().info(f"{repr(inv_current_pose)}")
+        self.get_logger().info(f"{repr(world_to_point_transform)}")
 
 
 def main(args=None):

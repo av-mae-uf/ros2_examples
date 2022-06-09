@@ -38,32 +38,34 @@ class TF2Broadcaster(Node):
 
         x, y = calculate_point_on_ellipse(theta=self.theta, a=2.0, b=1.25)
 
-        # Point coordinates as seen by Plane
-        planar_to_ellipse = TransformStamped()
-        planar_to_ellipse.header.stamp = self.get_clock().now().to_msg()
-        planar_to_ellipse.header.frame_id = 'planar'
-        planar_to_ellipse.child_frame_id = 'point'
-        planar_to_ellipse.transform.translation = Vector3(x=x, y=y, z=0.0)
+        """
+            Point coordinates as seen by an observer fixed to the "planar" coordinates.
+        """
+        ellipse_to_planar = TransformStamped()
+        ellipse_to_planar.header.stamp = self.get_clock().now().to_msg()
+        ellipse_to_planar.header.frame_id = 'planar'
+        ellipse_to_planar.child_frame_id = 'point'
+        ellipse_to_planar.transform.translation = Vector3(x=x, y=y, z=0.0)
 
         """
             Planar coordinates as seen by World. The plane that the ellipse lies on
             is rotated -45 degrees about the y-axis. A static_transform_publisher
-            should most likely be used in place of theis because the transform does
+            should most likely be used in place of this because the transform does
             not change over time. It is kept for an example of setting the rotation quaternion.
         """
-        world_to_planar = TransformStamped()
-        world_to_planar.header.stamp = self.get_clock().now().to_msg()
-        world_to_planar.header.frame_id = 'world'
-        world_to_planar.child_frame_id = 'planar'
-        world_to_planar.transform.translation = Vector3(x=0.0, y=0.0, z=0.0)
+        planar_to_world = TransformStamped()
+        planar_to_world.header.stamp = self.get_clock().now().to_msg()
+        planar_to_world.header.frame_id = 'world'
+        planar_to_world.child_frame_id = 'planar'
+        planar_to_world.transform.translation = Vector3(x=0.0, y=0.0, z=0.0)
 
         # Math for quaternion. Don't worry too much about this.
         quat_angle = -45/2 * pi/180 # convert to radians
         y_quat, w_quat = sin(quat_angle), cos(quat_angle)
 
-        world_to_planar.transform.rotation = Quaternion(x=0.0, y=y_quat, z=0.0, w=w_quat)
+        planar_to_world.transform.rotation = Quaternion(x=0.0, y=y_quat, z=0.0, w=w_quat)
 
-        self.tf_broadcaster.sendTransform(transform=[planar_to_ellipse, world_to_planar])
+        self.tf_broadcaster.sendTransform(transform=[ellipse_to_planar, planar_to_world])
 
 
 def main(args=None):

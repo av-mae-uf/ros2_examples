@@ -5,6 +5,8 @@ This document and examples are meant as a cheat sheet of sort. You can reference
 
 ## TODO:
 * Use tf_transformation module to show examples of converting a quaternion-rotation matrix, and vice versa.
+* Rename coordinate frames to be more clear
+* Add more decription of the setup. Point travelling along an ellipse that is on a inclined plane.
 
 
 ## Command Line - Static Transform Publisher
