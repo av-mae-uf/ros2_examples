@@ -18,28 +18,28 @@ class TF2Listener(Node):
     def timer_cb(self)-> None:
         try:
             """
-                Lookup a transfrom between world and point at the specified time (0 means current time).
+                Lookup a transfrom between "earth" and "satellite" coordinates at the specified time (0 means current time).
                 A timeout is specified so that the lookup will fail if a transform cannot 
                 be found within the specified time.
                 An object of type geometry_msgs.msg.TransformStamped is returned if successful.
             """
-            point_to_world_transform = self.tf2_buff.lookup_transform(target_frame="world", source_frame="point",
+            point_to_world_transform = self.tf2_buff.lookup_transform(target_frame="earth", source_frame="satellite",
                                                              time=tf2_ros.Time(seconds=0),
                                                              timeout=tf2_ros.Duration(seconds=0.2))
-        except Exception as ex:
+        except tf2_ros.TransformException as ex:
             # Catch the error if one occurs when looking up the transform
             self.get_logger().warn('{}: {}'.format(type(ex).__name__, ex))
             return
         
         try:
             """
-                You can also lookup the inverse transform. This result would return the a transform to take points
-                expressed in the "world" coordinates and express them in "point" coordinates
+                You can also lookup the inverse transform. This will return the transform that will take points
+                expressed in the "earth" coordinates and express them in "satellite" coordinates
             """
-            world_to_point_transform = self.tf2_buff.lookup_transform(target_frame="point", source_frame="world",
+            world_to_point_transform = self.tf2_buff.lookup_transform(target_frame="satellite", source_frame="earth",
                                                              time=tf2_ros.Time(seconds=0),
                                                              timeout=tf2_ros.Duration(seconds=0.2))
-        except Exception as ex:
+        except tf2_ros.TransformException as ex:
             # Catch the error if one occurs when looking up the transform
             self.get_logger().warn('{}: {}'.format(type(ex).__name__, ex))
             return

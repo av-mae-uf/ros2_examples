@@ -4,7 +4,6 @@ from math import sqrt, pow, cos, sin, pi
 import rclpy
 from rclpy.node import Node
 import tf2_ros
-# import tf_transformations
 
 from geometry_msgs.msg import TransformStamped, Vector3, Quaternion
 
@@ -31,7 +30,7 @@ class TF2Broadcaster(Node):
         self.theta = 0
 
     def timer_cb(self)-> None:
-        """ Generate a transform every callback invocation """
+        """ Generates a transform on every callback invocation """
 
         # Update angle. Wrap it around to 0 if it goes over 360.
         self.theta = (self.theta + 5) % 360 # Degrees
@@ -43,8 +42,8 @@ class TF2Broadcaster(Node):
         """
         ellipse_to_planar = TransformStamped()
         ellipse_to_planar.header.stamp = self.get_clock().now().to_msg()
-        ellipse_to_planar.header.frame_id = 'planar'
-        ellipse_to_planar.child_frame_id = 'point'
+        ellipse_to_planar.header.frame_id = 'orbital_plane'
+        ellipse_to_planar.child_frame_id = 'satellite'
         ellipse_to_planar.transform.translation = Vector3(x=x, y=y, z=0.0)
 
         """
@@ -55,8 +54,8 @@ class TF2Broadcaster(Node):
         """
         planar_to_world = TransformStamped()
         planar_to_world.header.stamp = self.get_clock().now().to_msg()
-        planar_to_world.header.frame_id = 'world'
-        planar_to_world.child_frame_id = 'planar'
+        planar_to_world.header.frame_id = 'earth'
+        planar_to_world.child_frame_id = 'orbital_plane'
         planar_to_world.transform.translation = Vector3(x=0.0, y=0.0, z=0.0)
 
         # Math for quaternion. Don't worry too much about this.
@@ -65,6 +64,10 @@ class TF2Broadcaster(Node):
 
         planar_to_world.transform.rotation = Quaternion(x=0.0, y=y_quat, z=0.0, w=w_quat)
 
+        """ 
+            It is possible to send multiple transforms in a single sendTransform call by 
+            placing them in a list.
+        """
         self.tf_broadcaster.sendTransform(transform=[ellipse_to_planar, planar_to_world])
 
 
