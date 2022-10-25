@@ -18,12 +18,13 @@ class TF2Listener(Node):
     def timer_cb(self)-> None:
         try:
             """
-                Lookup a transfrom between "earth" and "satellite" coordinates at the specified time (0 means current time).
-                A timeout is specified so that the lookup will fail if a transform cannot 
-                be found within the specified time.
+                Lookup the transfrom between "earth" and "satellite", i.e one that will take 
+                points expressed in the satellite's coordinates and expressed them in earth's coordinates,
+                at the specified time (0 means current time). A timeout is specified so that the lookup will fail 
+                if a transform cannot be found within the specified time.
                 An object of type geometry_msgs.msg.TransformStamped is returned if successful.
             """
-            point_to_world_transform = self.tf2_buff.lookup_transform(target_frame="earth", source_frame="satellite",
+            satellite_to_earth_transform = self.tf2_buff.lookup_transform(target_frame="earth", source_frame="satellite",
                                                              time=tf2_ros.Time(seconds=0),
                                                              timeout=tf2_ros.Duration(seconds=0.2))
         except tf2_ros.TransformException as ex:
@@ -36,7 +37,7 @@ class TF2Listener(Node):
                 You can also lookup the inverse transform. This will return the transform that will take points
                 expressed in the "earth" coordinates and express them in "satellite" coordinates
             """
-            world_to_point_transform = self.tf2_buff.lookup_transform(target_frame="satellite", source_frame="earth",
+            earth_to_satellite_transform = self.tf2_buff.lookup_transform(target_frame="satellite", source_frame="earth",
                                                              time=tf2_ros.Time(seconds=0),
                                                              timeout=tf2_ros.Duration(seconds=0.2))
         except tf2_ros.TransformException as ex:
@@ -44,7 +45,7 @@ class TF2Listener(Node):
             self.get_logger().warn('{}: {}'.format(type(ex).__name__, ex))
             return
 
-        self.get_logger().info(f"{repr(world_to_point_transform)}")
+        self.get_logger().info(f"{repr(earth_to_satellite_transform)}")
 
 
 def main(args=None):
